@@ -1,0 +1,6 @@
+from .base import *
+
+DEBUG = False
+ALLOWED_HOSTS = ALLOWED_HOSTS or ["localhost"]
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
