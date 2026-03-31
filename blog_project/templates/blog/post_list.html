@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load blog_extras %}
+
+{% block title %}DevJournal · Posts{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container grid">
+        <div class="content">
+            <div class="list-header">
+                <div>
+                    <p class="eyebrow">{% if is_search %}Search Results{% else %}All Posts{% endif %}</p>
+                    <h2>
+                        {% if is_search and query %}
+                            Results for “{{ query }}”
+                        {% else %}
+                            Discover our latest guides
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="sort">
+                    <a class="chip {% if sort != 'views' %}chip--active{% endif %}" href="?sort=date{% if active_tag %}&tag={{ active_tag }}{% endif %}">Latest</a>
+                    <a class="chip {% if sort == 'views' %}chip--active{% endif %}" href="?sort=views{% if active_tag %}&tag={{ active_tag }}{% endif %}">Most Viewed</a>
+                </div>
+            </div>
+
+            <div class="stack">
+                {% for post in posts %}
+                    {% include "blog/includes/post_card.html" with post=post query=query %}
+                {% empty %}
+                    <p>No posts found.</p>
+                {% endfor %}
+            </div>
+
+            {% if posts.paginator.num_pages > 1 %}
+                <div class="pagination">
+                    {% if posts.has_previous %}
+                        <a class="chip" href="?page={{ posts.previous_page_number }}{% if active_tag %}&tag={{ active_tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Prev</a>
+                    {% endif %}
+                    {% for num in posts.paginator.page_range %}
+                        {% if num == posts.number %}
+                            <span class="chip chip--active">{{ num }}</span>
+                        {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                            <a class="chip" href="?page={{ num }}{% if active_tag %}&tag={{ active_tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if posts.has_next %}
+                        <a class="chip" href="?page={{ posts.next_page_number }}{% if active_tag %}&tag={{ active_tag }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <aside class="sidebar">
+            <h3>Explore by Tag</h3>
+            <div class="tag-list">
+                {% for tag in popular_tags %}
+                    <a class="tag-pill {% if tag.slug == active_tag %}tag-pill--active{% endif %}" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">
+                        {{ tag.name }} <span>({{ tag.post_count }})</span>
+                    </a>
+                {% empty %}
+                    <p>No tags yet.</p>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}

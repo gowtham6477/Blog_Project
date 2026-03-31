@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} · DevJournal{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="detail-hero">
+            <div class="detail-media">
+                {% if post.cover_image %}
+                    <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
+                {% else %}
+                    <img src="https://placehold.co/1200x600/png?text=Dev+Journal" alt="{{ post.title }}" />
+                {% endif %}
+            </div>
+            <div class="detail-meta">
+                <p class="eyebrow">{{ post.published_at|date:"F d, Y" }}</p>
+                <h1>{{ post.title }}</h1>
+                <p class="meta">By {{ post.author.get_full_name|default:post.author.username }} · {{ post.views_count }} views</p>
+                <div class="tags">
+                    {% for tag in post.tags.all %}
+                        <a class="tag" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <article class="prose">
+                {{ post.body|linebreaks }}
+            </article>
+
+            <aside class="sidebar">
+                <h3>Related Posts</h3>
+                <div class="stack">
+                    {% for related in related_posts %}
+                        <a class="related-card" href="{% url 'blog:post_detail' slug=related.slug %}">
+                            <strong>{{ related.title }}</strong>
+                            <span>{{ related.published_at|date:"M d, Y" }}</span>
+                        </a>
+                    {% empty %}
+                        <p>No related posts yet.</p>
+                    {% endfor %}
+                </div>
+            </aside>
+        </div>
+
+        <section class="comment-section">
+            <div class="comment-form">
+                <h3>Leave a Comment</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        {{ form.name }}
+                        {{ form.email }}
+                    </div>
+                    {{ form.body }}
+                    <button class="button" type="submit">Send Comment</button>
+                </form>
+            </div>
+            <div class="comment-list">
+                <h3>Comments</h3>
+                {% for comment in comments %}
+                    <div class="comment-card">
+                        <div>
+                            <strong>{{ comment.name }}</strong>
+                            <span>{{ comment.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <p>{{ comment.body }}</p>
+                        <span class="badge">Approved</span>
+                    </div>
+                {% empty %}
+                    <p>No comments yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

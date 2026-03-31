@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}DevJournal · Home{% endblock %}
+
+{% block content %}
+<section class="hero" id="latest">
+    <div class="container">
+        <div class="hero-card">
+            <div>
+                <p class="eyebrow">Trending insights</p>
+                <h1>Build, ship, and scale your Django knowledge.</h1>
+                <p class="subtitle">Latest tutorials, performance wins, and backend patterns from the community.</p>
+                <div class="hero-actions">
+                    <a class="button" href="{% url 'blog:post_list' %}">Browse Posts</a>
+                    <a class="button button--ghost" href="{% url 'blog:post_list' %}?sort=views">Most Viewed</a>
+                </div>
+            </div>
+            <div class="hero-media">
+                <img src="https://images.unsplash.com/featured/?laptop,code" alt="Developer workspace" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container grid">
+        <div class="content">
+            <h2>Latest Posts</h2>
+            <div class="stack">
+                {% for post in latest_posts %}
+                    {% include "blog/includes/post_card.html" with post=post %}
+                {% empty %}
+                    <p>No posts yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <aside class="sidebar">
+            <h3>Explore by Tag</h3>
+            <div class="tag-list">
+                {% for tag in popular_tags %}
+                    <a class="tag-pill" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">
+                        {{ tag.name }} <span>({{ tag.post_count }})</span>
+                    </a>
+                {% empty %}
+                    <p>No tags yet.</p>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}

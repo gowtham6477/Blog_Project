@@ -1,0 +1,21 @@
+{% load blog_extras %}
+<article class="post-card">
+    <div class="post-card__media">
+        {% if post.cover_image %}
+            <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
+        {% else %}
+            <img src="https://placehold.co/600x400/png?text=Dev+Journal+{{ forloop.counter }}" alt="{{ post.title }}" />
+        {% endif %}
+    </div>
+    <div class="post-card__body">
+    <h3><a href="{% url 'blog:post_detail' slug=post.slug %}">{{ post.title|highlight:query|default:"" }}</a></h3>
+        <p class="meta">By {{ post.author.get_full_name|default:post.author.username }} · {{ post.published_at|date:"M d, Y" }}</p>
+    <p class="excerpt">{{ post.body|truncatewords:24|highlight:query|default:"" }}</p>
+        <div class="tags">
+            {% for tag in post.tags.all %}
+                <a class="tag" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+        <a class="link" href="{% url 'blog:post_detail' slug=post.slug %}">Read More</a>
+    </div>
+</article>

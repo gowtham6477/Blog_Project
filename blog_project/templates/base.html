@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}DevJournal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'blog:home' %}">DevJournal</a>
+            <nav class="nav-links">
+                <a href="{% url 'blog:post_list' %}">Posts</a>
+                <a href="#latest">Latest</a>
+            </nav>
+            <form class="search" action="{% url 'blog:search' %}" method="get">
+                <input class="input" type="search" name="q" placeholder="Search articles" value="{{ query|default:'' }}" />
+                <button class="button" type="submit">Search</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="page">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>Built with Django · Crafted for fast learning.</p>
+        </div>
+    </footer>
+</body>
+</html>
