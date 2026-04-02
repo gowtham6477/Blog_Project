@@ -1,9 +1,12 @@
-from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
+from django.views.generic import CreateView
 
-from .forms import CommentForm
+from .forms import CommentForm, PostForm
 from .models import Post, Tag
 
 
@@ -21,7 +24,6 @@ def home(request):
 		Tag.objects.annotate(
 			post_count=Count("posts", filter=Q(posts__status=Post.Status.PUBLISHED))
 		)
-		.filter(post_count__gt=0)
 		.order_by("-post_count", "name")[:10]
 	)
 	return render(
@@ -49,13 +51,17 @@ def post_list(request):
 
 	paginator = Paginator(queryset, 8)
 	page = request.GET.get("page")
-	posts = paginator.get_page(page)
+	try:
+		posts = paginator.page(page)
+	except PageNotAnInteger:
+		posts = paginator.page(1)
+	except EmptyPage:
+		posts = paginator.page(paginator.num_pages)
 
 	popular_tags = (
 		Tag.objects.annotate(
 			post_count=Count("posts", filter=Q(posts__status=Post.Status.PUBLISHED))
 		)
-		.filter(post_count__gt=0)
 		.order_by("-post_count", "name")[:10]
 	)
 
@@ -71,6 +77,36 @@ def post_list(request):
 	)
 
 
+def tag_posts(request, slug):
+	queryset = _published_posts().filter(tags__slug=slug).order_by("-published_at")
+	paginator = Paginator(queryset, 8)
+	page = request.GET.get("page")
+	try:
+		posts = paginator.page(page)
+	except PageNotAnInteger:
+		posts = paginator.page(1)
+	except EmptyPage:
+		posts = paginator.page(paginator.num_pages)
+
+	popular_tags = (
+		Tag.objects.annotate(
+			post_count=Count("posts", filter=Q(posts__status=Post.Status.PUBLISHED))
+		)
+		.order_by("-post_count", "name")[:10]
+	)
+
+	return render(
+		request,
+		"blog/post_list.html",
+		{
+			"posts": posts,
+			"popular_tags": popular_tags,
+			"active_tag": slug,
+			"sort": "date",
+		},
+	)
+
+
 def search(request):
 	query = request.GET.get("q", "").strip()
 	queryset = _published_posts()
@@ -79,13 +115,17 @@ def search(request):
 
 	paginator = Paginator(queryset.order_by("-published_at"), 8)
 	page = request.GET.get("page")
-	posts = paginator.get_page(page)
+	try:
+		posts = paginator.page(page)
+	except PageNotAnInteger:
+		posts = paginator.page(1)
+	except EmptyPage:
+		posts = paginator.page(paginator.num_pages)
 
 	popular_tags = (
 		Tag.objects.annotate(
 			post_count=Count("posts", filter=Q(posts__status=Post.Status.PUBLISHED))
 		)
-		.filter(post_count__gt=0)
 		.order_by("-post_count", "name")[:10]
 	)
 
@@ -136,3 +176,21 @@ def post_detail(request, slug):
 			"related_posts": related_posts,
 		},
 	)
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+	model = Post
+	form_class = PostForm
+	template_name = "blog/post_form.html"
+
+	def form_valid(self, form):
+		post = form.save(commit=False)
+		post.author = self.request.user
+		if post.status == Post.Status.PUBLISHED and not post.published_at:
+			post.published_at = timezone.now()
+		post.save()
+		form.save_m2m()
+		return redirect(post.get_absolute_url())
+
+	def get_success_url(self):
+		return reverse("blog:post_list")

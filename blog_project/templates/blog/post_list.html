@@ -28,7 +28,7 @@
                 {% for post in posts %}
                     {% include "blog/includes/post_card.html" with post=post query=query %}
                 {% empty %}
-                    <p>No posts found.</p>
+                    <p>No posts found matching your criteria.</p>
                 {% endfor %}
             </div>
 
@@ -55,7 +55,7 @@
             <h3>Explore by Tag</h3>
             <div class="tag-list">
                 {% for tag in popular_tags %}
-                    <a class="tag-pill {% if tag.slug == active_tag %}tag-pill--active{% endif %}" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">
+                    <a class="tag-pill {% if tag.slug == active_tag %}tag-pill--active{% endif %}" href="{% url 'blog:tag_posts' slug=tag.slug %}">
                         {{ tag.name }} <span>({{ tag.post_count }})</span>
                     </a>
                 {% empty %}

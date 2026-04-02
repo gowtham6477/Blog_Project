@@ -10,7 +10,7 @@
                 {% if post.cover_image %}
                     <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" />
                 {% else %}
-                    <img src="https://placehold.co/1200x600/png?text=Dev+Journal" alt="{{ post.title }}" />
+                    <img src="https://picsum.photos/seed/{{ post.slug }}-detail/1200/600" alt="{{ post.title }}" />
                 {% endif %}
             </div>
             <div class="detail-meta">
@@ -19,7 +19,7 @@
                 <p class="meta">By {{ post.author.get_full_name|default:post.author.username }} · {{ post.views_count }} views</p>
                 <div class="tags">
                     {% for tag in post.tags.all %}
-                        <a class="tag" href="{% url 'blog:post_list' %}?tag={{ tag.slug }}">{{ tag.name }}</a>
+                        <a class="tag" href="{% url 'blog:tag_posts' slug=tag.slug %}">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
             </div>

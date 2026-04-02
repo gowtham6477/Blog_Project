@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}DevJournal{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/site.css' %}" />
+    <link rel="alternate" type="application/rss+xml" title="DevJournal RSS" href="{% url 'blog:rss_feed' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -15,8 +16,9 @@
         <div class="container header-inner">
             <a class="brand" href="{% url 'blog:home' %}">DevJournal</a>
             <nav class="nav-links">
-                <a href="{% url 'blog:post_list' %}">Posts</a>
-                <a href="#latest">Latest</a>
+                <a class="{% if request.path == '/posts/' %}active{% endif %}" href="{% url 'blog:post_list' %}">Posts</a>
+                <a class="{% if request.path == '/posts/new/' %}active{% endif %}" href="{% url 'blog:post_create' %}">New Post</a>
+                <a class="{% if request.path == '/' %}active{% endif %}" href="{% url 'blog:home' %}#latest">Latest</a>
             </nav>
             <form class="search" action="{% url 'blog:search' %}" method="get">
                 <input class="input" type="search" name="q" placeholder="Search articles" value="{{ query|default:'' }}" />

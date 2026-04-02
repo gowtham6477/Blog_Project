@@ -17,13 +17,25 @@ def publish_posts(modeladmin, request, queryset):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-	list_display = ("title", "author", "status", "published_at", "views_count")
+	list_display = (
+		"title",
+		"author",
+		"status",
+		"published_at",
+		"views_count",
+		"tag_list",
+	)
 	list_filter = ("status", "author", "published_at")
 	search_fields = ("title", "body")
 	prepopulated_fields = {"slug": ("title",)}
 	date_hierarchy = "published_at"
 	inlines = [PostTagInline]
 	actions = [publish_posts]
+
+	def tag_list(self, obj):
+		return ", ".join(tag.name for tag in obj.tags.all())
+
+	tag_list.short_description = "Tags"
 
 
 @admin.register(Tag)

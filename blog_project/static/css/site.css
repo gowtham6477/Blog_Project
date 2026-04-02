@@ -72,6 +72,11 @@ img {
     color: var(--text);
 }
 
+.nav-links a.active {
+    color: var(--accent);
+    font-weight: 600;
+}
+
 .search {
     display: flex;
     gap: 8px;

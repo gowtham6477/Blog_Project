@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Create Post · DevJournal{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="prose">
+            <h2>Create a new post</h2>
+            <form method="post" enctype="multipart/form-data" class="stack">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <label>
+                    Title
+                    {{ form.title }}
+                </label>
+                <label>
+                    Body
+                    {{ form.body }}
+                </label>
+                <label>
+                    Status
+                    {{ form.status }}
+                </label>
+                <label>
+                    Cover image
+                    {{ form.cover_image }}
+                </label>
+                <fieldset class="tags">
+                    <legend>Tags</legend>
+                    {{ form.tags }}
+                </fieldset>
+                <button class="button" type="submit">Publish</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

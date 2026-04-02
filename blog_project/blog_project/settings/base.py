@@ -8,12 +8,14 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes"}
 ALLOWED_HOSTS = [host for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if host]
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
     "blog",
 ]
 
@@ -39,6 +41,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "blog.context_processors.site_context",
             ],
         },
     }
@@ -72,3 +75,21 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+JAZZMIN_SETTINGS = {
+    "site_title": "DevJournal Admin",
+    "site_header": "DevJournal",
+    "welcome_sign": "Manage content and community",
+    "search_model": ["blog.Post", "blog.Comment", "blog.Tag"],
+    "show_ui_builder": True,
+    "navigation_expanded": True,
+    "topmenu_links": [
+        {"name": "View Site", "url": "/", "new_window": True},
+    ],
+    "icons": {
+        "blog.Post": "fas fa-newspaper",
+        "blog.Tag": "fas fa-tags",
+        "blog.Comment": "fas fa-comments",
+        "auth.User": "fas fa-user",
+    },
+}

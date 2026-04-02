@@ -55,6 +55,9 @@ class Post(models.Model):
 			self.slug = candidate
 		super().save(*args, **kwargs)
 
+	def get_absolute_url(self):
+		return f"/posts/{self.slug}/"
+
 
 class PostTag(models.Model):
 	post = models.ForeignKey(Post, on_delete=models.CASCADE)
