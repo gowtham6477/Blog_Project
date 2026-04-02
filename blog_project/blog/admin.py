@@ -40,7 +40,7 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-	list_display = ("name", "slug")
+	list_display = ("name", "slug", "description")
 	search_fields = ("name",)
 	prepopulated_fields = {"slug": ("name",)}
 
@@ -52,7 +52,16 @@ def approve_comments(modeladmin, request, queryset):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-	list_display = ("name", "email", "post", "approved", "created_at")
+	list_display = ("post", "author_name", "is_approved", "created_at")
 	list_filter = ("approved", "created_at")
 	search_fields = ("name", "email", "body")
 	actions = [approve_comments]
+
+	def author_name(self, obj):
+		return obj.author_name
+
+	def is_approved(self, obj):
+		return obj.is_approved
+
+	author_name.short_description = "Author name"
+	is_approved.short_description = "Approved"

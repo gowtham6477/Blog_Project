@@ -6,6 +6,7 @@ from django.utils.text import slugify
 class Tag(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	slug = models.SlugField(max_length=60, unique=True, db_index=True)
+	description = models.TextField(blank=True)
 
 	class Meta:
 		ordering = ["name"]
@@ -88,3 +89,15 @@ class Comment(models.Model):
 
 	def __str__(self) -> str:
 		return f"Comment by {self.name}"
+
+	@property
+	def author_name(self):
+		return self.name
+
+	@property
+	def author_email(self):
+		return self.email
+
+	@property
+	def is_approved(self):
+		return self.approved

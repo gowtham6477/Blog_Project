@@ -107,6 +107,36 @@ def tag_posts(request, slug):
 	)
 
 
+def author_posts(request, username):
+	queryset = _published_posts().filter(author__username=username).order_by("-published_at")
+	paginator = Paginator(queryset, 8)
+	page = request.GET.get("page")
+	try:
+		posts = paginator.page(page)
+	except PageNotAnInteger:
+		posts = paginator.page(1)
+	except EmptyPage:
+		posts = paginator.page(paginator.num_pages)
+
+	popular_tags = (
+		Tag.objects.annotate(
+			post_count=Count("posts", filter=Q(posts__status=Post.Status.PUBLISHED))
+		)
+		.order_by("-post_count", "name")[:10]
+	)
+
+	return render(
+		request,
+		"blog/post_list.html",
+		{
+			"posts": posts,
+			"popular_tags": popular_tags,
+			"author_username": username,
+			"sort": "date",
+		},
+	)
+
+
 def search(request):
 	query = request.GET.get("q", "").strip()
 	queryset = _published_posts()
