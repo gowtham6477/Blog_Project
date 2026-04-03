@@ -12,7 +12,7 @@ urlpatterns = [
 	path("tag/<slug:slug>/", views.tag_posts, name="tag_posts"),
 	path("tags/<slug:slug>/", views.tag_posts, name="tag_posts_alt"),
 	path("author/<str:username>/", views.author_posts, name="author_posts"),
-	path("posts/<slug:slug>/", views.post_detail, name="post_detail"),
 	path("posts/new/", views.PostCreateView.as_view(), name="post_create"),
+	path("posts/<slug:slug>/", views.post_detail, name="post_detail"),
 	path("rss/", LatestPostsFeed(), name="rss_feed"),
 ]
